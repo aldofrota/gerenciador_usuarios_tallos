@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <div class="card">
+    <div class="formularios">
       <form v-if="login" class="login" @submit="onSubmitLogin">
         <img src="/tallos-logo.png" alt="Logo Tallos" />
         <input
@@ -51,7 +51,7 @@
           id="repeat_password"
           type="password"
           v-model="register_form.repeat_password"
-          placeholder="Repeat Password"
+          placeholder="Repetir Senha"
           minlength="8"
           required
         />
@@ -63,12 +63,14 @@
 </template>
 
 <script>
+import { io } from "socket.io-client";
 import { toast } from "vue3-toastify";
 import axios from "axios";
 
 export default {
   data() {
     return {
+      socket: io("http://192.168.0.103:3000"),
       register: false,
       login: true,
       login_form: {
@@ -84,11 +86,32 @@ export default {
     };
   },
 
-  mounted() {},
+  mounted() {
+    this.socket.disconnect();
+  },
 
   methods: {
     onSubmitLogin(event) {
       event.preventDefault();
+      const data = { ...this.login_form };
+
+      axios
+        .post("http://192.168.0.103:3000/users/auth", data)
+        .then((response) => {
+          if (response.data) {
+            this.$store.dispatch("login", response.data);
+            this.$router.push("/");
+          } else {
+            toast(response.data.message, {
+              type: "warning",
+            });
+          }
+        })
+        .catch((error) => {
+          toast("Erro ao realizar Login: " + error.response.data.message, {
+            type: "error",
+          });
+        });
     },
 
     onSubmitRegister(event) {
@@ -112,7 +135,7 @@ export default {
       }
 
       axios
-        .post("http://localhost:3000/users", data)
+        .post("http://192.168.0.103:3000/users", data)
         .then(() => {
           toast("Cadastro realizado", {
             type: "success",
@@ -132,6 +155,7 @@ export default {
       this.login_form.email = "";
       this.login_form.password = "";
     },
+
     clearFormRegister() {
       this.register_form.name = "";
       this.register_form.email = "";
@@ -160,8 +184,10 @@ export default {
   align-items: center;
   justify-content: center;
 
-  .card {
-    transition: all 0.6s;
+  .formularios {
+    form {
+      border: none;
+    }
 
     .login,
     .register {

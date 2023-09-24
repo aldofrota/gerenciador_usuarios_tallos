@@ -1,5 +1,3 @@
-// websockets.gateway.ts
-
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -15,26 +13,39 @@ import { Server, Socket } from 'socket.io';
 export class WebsocketGateway {
   @WebSocketServer()
   server: Server;
+  users = [];
 
   handleConnection(client: any) {
-    console.log(client.id);
     const payload = client.handshake.query.user;
     const user = JSON.parse(payload);
+    user.id_socket = client.id;
 
-    this.server.emit(
-      'message',
-      `Novo Usuario logado, Usuário: ${user.usuario}`,
+    if (user.token) {
+      const exists = this.users.filter(
+        (userslogged) => userslogged.email === user.email,
+      );
+
+      if (!exists[0]) {
+        this.users.push(user);
+      }
+
+      this.server.emit('connected', this.users);
+    }
+  }
+
+  handleDisconnect(client: Socket) {
+    const idx = this.users.findIndex(
+      (objeto) => objeto.id_socket === client.id,
     );
+
+    if (idx !== -1) {
+      this.users.splice(idx, 1); // Remove 1 elemento a partir do índice encontrado
+    }
+    this.server.emit('desconnected', this.users);
   }
 
-  handleDisconnect(client: any) {
-    // console.log(client);
-    // Lógica a ser executada quando um cliente se desconectar
-  }
-
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: any) {
-    console.log(client);
-    console.log('Mensagem recebida do cliente:', payload);
-  }
+  // @SubscribeMessage('register')
+  // handleMessageRegisterUser(client: Socket, payload: any) {
+  //   console.log('Mensagem recebida do cliente:', payload);
+  // }
 }

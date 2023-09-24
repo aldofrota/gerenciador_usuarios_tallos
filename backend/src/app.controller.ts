@@ -28,4 +28,25 @@ export class AppController {
       throw new HttpException(error.response, error.status);
     }
   }
+
+  @Post('/auth')
+  @ApiOperation({ summary: 'Autenticar usuário' })
+  @ApiBody({
+    type: LoginUserDto,
+    description: 'Corpo da requisição se autenticação',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuário autenticado com sucesso',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  async authUser(@Body() body: User) {
+    try {
+      const user = await this.appService.auth(body);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.response, error.status);
+    }
+  }
 }

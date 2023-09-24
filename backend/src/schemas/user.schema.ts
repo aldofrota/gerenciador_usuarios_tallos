@@ -11,6 +11,6 @@ export const UserSchema = new mongoose.Schema({
   },
   level: {
     type: String,
-    default: 'user',
+    default: 'User',
   },
 });
