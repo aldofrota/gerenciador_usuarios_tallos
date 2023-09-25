@@ -1,122 +1,191 @@
 <template>
-  <div class="main" v-if="this.usuario.nome">
-    <!-- <div>
-      <NavMenu />
+  <div class="main" v-if="user.name">
+    <div class="sidebar">
+      <div class="logo">
+        <img src="/tallos-logo.png" alt="Logo Tallos" />
+        <span>Tallos Users</span>
+      </div>
+      <div class="user-data">
+        <Notifications :socket="socket" />
+        <UserPopover :logout="logout" :user="user" />
+      </div>
     </div>
-    <div class="colaborador" v-if="usuario.perfil === 'colaborador'">
-      <TelaColaborador />
+    <div class="content">
+      <div class="users">
+        <div class="title">
+          <v-icon class="icon-user" name="hi-status-online" />
+          <span>Online</span>
+        </div>
+
+        <div class="user-card" v-for="user in users_online">
+          <UserCard :user="user" />
+        </div>
+      </div>
+      <div class="users">
+        <div class="title">
+          <v-icon class="icon-user" name="hi-solid-users" />
+          <span>Usuários</span>
+        </div>
+        <div class="user-card" v-for="user in users_online">
+          <UserCard :user="user" />
+        </div>
+      </div>
     </div>
-    <b-tabs
-      class="tabs mt-2"
-      content-class="mt-3"
-      small
-      pills
-      justified
-      v-if="usuario.perfil === 'coordenador'"
-    >
-      <b-tab active>
-        <template class="aba" #title>
-          <b-icon class="icone" icon="clipboard-data" /><span class="nome"
-            >Painel</span
-          >
-        </template>
-        <Painel />
-      </b-tab>
-      <b-tab>
-        <template #title>
-          <b-icon class="icone" icon="file-earmark" /><span class="nome"
-            >Ordens</span
-          >
-        </template>
-        <Ordens />
-      </b-tab>
-      <b-tab>
-        <template #title>
-          <b-icon class="icone" icon="building" /><span class="nome"
-            >Clientes</span
-          >
-        </template>
-        <Clientes />
-      </b-tab>
-      <b-tab>
-        <template #title>
-          <b-icon class="icone" icon="person" /><span class="nome"
-            >Colaboradores</span
-          >
-        </template>
-        <Colaboradores />
-      </b-tab>
-    </b-tabs> -->
   </div>
 </template>
 
 <script>
+import { io } from "socket.io-client";
+import UserCard from "../components/UserCard.vue";
+import UserPopover from "../components/UserPopover.vue";
+import Notifications from "../components/Notifications.vue";
+
 export default {
+  components: {
+    UserCard,
+    UserPopover,
+    Notifications,
+  },
+
   data() {
     return {
-      usuario: {
-        nome: "",
-        perfil: "",
-      },
+      users_online: [],
+      socket: io("http://192.168.0.103:3000", {
+        query: {
+          user: JSON.stringify(this.$store.getters.getUserData),
+        },
+      }),
     };
   },
 
   mounted() {
-    if (!localStorage.nome) {
+    this.socket.on("connected", (users) => {
+      this.users_online.splice(0);
+      this.users_online.push(...users);
+    });
+
+    this.socket.on("desconnected", (users) => {
+      this.users_online.splice(0);
+      this.users_online.push(...users);
+    });
+
+    const userData = this.$store.getters.getUserData;
+    if (!userData || !userData.name || !userData.email || !userData.token) {
       this.$router.push("/login");
-    }
-    if (localStorage.nome) {
-      this.usuario.nome = localStorage.nome;
-    }
-    if (localStorage.perfil) {
-      this.usuario.perfil = localStorage.perfil;
     }
   },
 
   methods: {
+    sendMessage(message) {
+      this.socket.emit("message", message);
+    },
     logout() {
-      localStorage.clear();
+      this.$store.dispatch("logout");
+      this.socket.disconnect();
       this.$router.push("/login");
+    },
+  },
+
+  computed: {
+    user() {
+      return {
+        name: this.$store.getters.getUserData.name,
+        email: this.$store.getters.getUserData.email,
+        level: this.$store.getters.getUserData.level,
+      };
     },
   },
 };
 </script>
 
-<style>
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-  -webkit-touch-callout: none; /* iPhone OS, Safari */
-  -webkit-user-select: none; /* Chrome, Safari 3 */
-  -khtml-user-select: none; /* Safari 2 */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* IE10+ */
-  user-select: none; /* Possível implementação no futuro */
-  cursor: default;
-}
+<style scoped lang="scss">
+.main {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 10px;
 
-.tabs {
-  width: 100%;
-}
-.icone {
-  margin-right: 5px;
-}
-.nav-pills .nav-link.active,
-.nav-pills .show > .nav-link {
-  color: #252525;
-  background-color: #f5f5f5;
-}
-a {
-  color: #252525;
-}
-a:hover {
-  color: #555555;
-}
+  .sidebar {
+    height: 80px;
+    width: 100%;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
 
-@media only screen and (max-width: 580px) {
-  .nome {
-    display: none;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      img {
+        height: 60px;
+      }
+      span {
+        color: #009acc;
+        font-size: 2rem;
+        font-weight: 600;
+      }
+    }
+
+    .user-data {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .icon-notifications {
+        height: 40px;
+        width: 40px;
+        color: #009acc;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+
+    .users {
+      height: 90%;
+      width: 20%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 20px;
+      background: #e0e0e0;
+      box-shadow: 14px 14px 30px #acacac, -14px -14px 30px #ffffff;
+      margin-left: 20px;
+
+      .title {
+        height: 10%;
+        width: 100%;
+        background-color: #d8d5d5;
+        border-radius: 20px 20px 0 0;
+        border-bottom: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        color: #009acc;
+
+        .icon-user {
+          height: 35px;
+          width: 35px;
+        }
+        span {
+          font-size: 1.6rem;
+          margin-left: 15px;
+        }
+      }
+
+      .user-card {
+        width: calc(100%);
+        display: flex;
+        justify-content: center;
+      }
+    }
   }
 }
 </style>

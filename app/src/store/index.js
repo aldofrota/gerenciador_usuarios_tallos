@@ -1,18 +1,39 @@
-// store/index.js
-
 import { createStore } from "vuex";
 
-export default createStore({
-  state: {
-    // Defina seu estado inicial aqui
+const initialState = {
+  user: {
+    name: null,
+    email: null,
+    token: null,
+    level: null,
   },
+};
+
+export default createStore({
+  state: { ...initialState },
   mutations: {
-    // Defina suas mutações aqui para alterar o estado
+    SET_USER_DATA(state, userData) {
+      state.user.name = userData.name;
+      state.user.email = userData.email;
+      state.user.token = userData.token;
+      state.user.level = userData.level;
+    },
+    RESET_USER_DATA(state) {
+      state.user.name = null;
+      state.user.email = null;
+      state.user.token = null;
+      state.user.level = null;
+    },
   },
   actions: {
-    // Defina suas ações aqui para fazer chamadas assíncronas
+    login({ commit }, userData) {
+      commit("SET_USER_DATA", userData);
+    },
+    logout({ commit }) {
+      commit("RESET_USER_DATA");
+    },
   },
   getters: {
-    // Defina seus getters para acessar o estado
+    getUserData: (state) => state.user,
   },
 });
