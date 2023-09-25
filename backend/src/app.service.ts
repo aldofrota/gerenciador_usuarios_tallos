@@ -3,9 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
 import { User, UserDocument } from './models/user.model';
+import { WebsocketGateway } from './websocket.gateway';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { WebsocketGateway } from './websocket.gateway';
+import * as moment from 'moment';
 
 @Injectable()
 export class AppService {
@@ -25,8 +26,12 @@ export class AppService {
       const createdUser = new this.userModel(user);
       await createdUser.save();
 
-      const new_user = { ...createdUser };
-      delete new_user.password;
+      const new_user = {
+        title: 'Novo Usuário',
+        message: `${createdUser.name} realizou seu cadastro na plataforma.`,
+        time: moment(),
+        email: createdUser.email,
+      };
       this.websocketGateway.server.emit('new-user', new_user);
     } catch (error) {
       if (error.code === 11000) {

@@ -6,7 +6,7 @@
         <span>Tallos Users</span>
       </div>
       <div class="user-data">
-        <Notifications :notifications="notifications" />
+        <Notifications :socket="socket" />
         <UserPopover :logout="logout" :user="user" />
       </div>
     </div>
@@ -36,7 +36,6 @@
 
 <script>
 import { io } from "socket.io-client";
-import { toast } from "vue3-toastify";
 import UserCard from "../components/UserCard.vue";
 import UserPopover from "../components/UserPopover.vue";
 import Notifications from "../components/Notifications.vue";
@@ -51,7 +50,6 @@ export default {
   data() {
     return {
       users_online: [],
-      notifications: [],
       socket: io("http://192.168.0.103:3000", {
         query: {
           user: JSON.stringify(this.$store.getters.getUserData),
@@ -70,8 +68,6 @@ export default {
       this.users_online.splice(0);
       this.users_online.push(...users);
     });
-
-    this.socket.on("new-user", (user) => {});
 
     const userData = this.$store.getters.getUserData;
     if (!userData || !userData.name || !userData.email || !userData.token) {

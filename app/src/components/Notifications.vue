@@ -4,14 +4,23 @@
       <input type="checkbox" v-model="open" />
       <span class="button"></span>
       <span class="label"
-        ><v-icon class="icon-notifications" name="oi-bell-fill"
-      /></span>
+        ><v-icon class="icon-notifications" name="oi-bell-fill" />
+      </span>
+      <span
+        v-if="notifications.length > 0 && !open"
+        class="bag animate__animated animate__fadeIn"
+        >{{ notifications.length }}</span
+      >
     </div>
 
     <div v-if="open" class="animate__animated animate__fadeIn popover-painel">
       <div class="title-notifications">Notificações</div>
       <div class="notifications">
-        <div class="card" v-for="notification in notifications">
+        <div
+          v-if="notifications.length > 0"
+          class="card"
+          v-for="notification in notifications"
+        >
           <div class="textBox">
             <div class="textContent">
               <p class="h1">{{ notification.title }}</p>
@@ -22,6 +31,15 @@
             <p class="p">{{ notification.message }}</p>
             <div></div>
           </div>
+          <div
+            @click="closeNotification(notification)"
+            class="close-notification"
+          >
+            x
+          </div>
+        </div>
+        <div class="img-no-notifications" v-if="notifications.length === 0">
+          <img src="/sem-notificacao.jpg" alt="Imagem de sem notificações" />
         </div>
       </div>
     </div>
@@ -30,29 +48,33 @@
 
 <script>
 import moment from "moment";
+
 export default {
   data() {
     return {
       notifications: [
         {
           title: "Novo Usuário",
-          time: "2023-09-24T12:34:56Z",
-          message: "Joe Doe se cadastrou na plataforma",
+          time: moment(),
+          message: "Fulano acabou de se cadastrar na plataforma",
         },
       ],
       open: false,
     };
   },
   props: {
-    notifications: {
+    socket: {
       required: true,
     },
   },
-  methods: {
-    chamarLogout() {
-      // this.logout();
-    },
 
+  mounted() {
+    this.socket.on("new-user", (user) => {
+      this.notifications.push(user);
+    });
+  },
+
+  methods: {
     abrirMenu() {
       this.open = !this.open;
     },
@@ -71,6 +93,12 @@ export default {
         const horas = Math.floor(diferenca / 3600);
         return `Há ${horas} horas`;
       }
+    },
+
+    closeNotification(notification) {
+      this.notifications = this.notifications.filter(
+        (notif) => notif !== notification
+      );
     },
   },
 };
@@ -97,6 +125,22 @@ export default {
   opacity: 0.2;
   height: 52px;
   min-width: 50px;
+}
+
+.toggle .bag {
+  background-color: red;
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.8rem;
 }
 
 .toggle .button {
@@ -176,7 +220,7 @@ export default {
 .popover {
   position: relative;
   .popover-painel {
-    min-width: 290px;
+    width: 300px;
     background: #ffffff;
     position: absolute;
     border-radius: 10px 0 10px 10px;
@@ -202,6 +246,16 @@ export default {
 
     .notifications {
       padding: 10px 5px;
+
+      .img-no-notifications {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+          height: 190px;
+        }
+      }
+
       .card {
         width: 100%;
         max-width: 290px;
@@ -213,11 +267,35 @@ export default {
         justify-content: left;
         backdrop-filter: blur(10px);
         transition: 0.5s ease-in-out;
+        margin-top: 5px;
+        position: relative;
+        cursor: default;
+        user-select: none;
+      }
+
+      .close-notification {
+        position: absolute;
+        top: -5px;
+        right: 0px;
+        height: 22px;
+        width: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        background-color: red;
+        cursor: pointer;
       }
 
       .card:hover {
-        cursor: pointer;
         transform: scale(1.02);
+      }
+
+      .close-notification:hover {
+        transform: scale(1.05);
       }
 
       .textBox {

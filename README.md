@@ -16,17 +16,17 @@
     [x] Deve ser possível realizar login na plataforma.
     [x] O mesmo usuário não pode realizar login em sessões diferentes simultaneamente.
     [x] Deve ser possível criar novos usuários.
-    [ ] A criação de novos usuários deve refletir em todos os usuários logados.
+    [x] A criação de novos usuários deve refletir em todos os usuários logados.
     [ ] Deve ser possível mudar as permissões dos usuários.
     [ ] A mudança das permissões dos usuários deve refletir em todos os usuários logados.
     [ ] Deve ser possível deletar os usuários.
     [ ] A remoção dos usuários deve refletir em todos os usuários logados.
     [ ] Todas as rotas da api devem ser autenticadas utilizando JWT.
-    [ ] As aplicações(Front-End, Back-End, Banco de Dados) devem ser conteinerizadas.
-    [ ] Cada funcionalidade deve ser desenvolvida utilizando GitFlow.
-    [ ] O Front-end deve possuir gerenciamento dos estados dos usuários.
+    [x] As aplicações(Front-End, Back-End, Banco de Dados) devem ser conteinerizadas.
+    [x] Cada funcionalidade deve ser desenvolvida utilizando GitFlow.
+    [x] O Front-end deve possuir gerenciamento dos estados dos usuários.
 
 # Diferenciais:
 
     [ ] Todas as rotas da api devem ser documentadas no Swagger.
-    [ ] Devem ser aplicados os testes unitários e testes de integração na api.
+    [x] Devem ser aplicados os testes unitários e testes de integração na api.
