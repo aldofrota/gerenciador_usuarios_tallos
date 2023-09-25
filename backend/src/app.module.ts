@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   OnModuleInit,
+  RequestMethod,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -24,7 +25,10 @@ export class AppModule implements OnModuleInit, NestModule {
   constructor(private readonly appService: AppService) {}
 
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer.apply(AuthMiddleware).forRoutes(
+      { path: '/users', method: RequestMethod.GET },
+      // Adicione aqui outras rotas e métodos que deseja aplicar o middleware
+    );
   }
 
   async onModuleInit() {

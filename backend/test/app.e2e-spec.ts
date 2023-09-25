@@ -1,7 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import * as request from 'supertest';
+import * as jwt from 'jsonwebtoken';
+
+function generateToken(): string {
+  const token = jwt.sign({ usuario: 'Supertest' }, 'tallos-users', {
+    expiresIn: '1h',
+  });
+  return token;
+}
 
 function generateRandomEmail(
   prefix: string,
@@ -45,7 +53,7 @@ describe('AppController (e2e)', () => {
   it('Autenticar na Aplicação', () => {
     const user = {
       email: 'admin@admin',
-      password: 'admin',
+      password: 'admin1234',
     };
 
     return request(app.getHttpServer())
@@ -57,5 +65,13 @@ describe('AppController (e2e)', () => {
         expect(res.body.email);
         expect(res.body.token);
       });
+  });
+
+  it('Usuários cadastrados', () => {
+    const token = generateToken(); // Gere um token JWT válido
+    return request(app.getHttpServer())
+      .get('/users')
+      .set('Authorization', `Bearer ${token}`) // Inclua o token no cabeçalho
+      .expect(200); // Esperando uma resposta bem-sucedida (HTTP status code 200)
   });
 });

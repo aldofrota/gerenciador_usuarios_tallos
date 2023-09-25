@@ -6,11 +6,30 @@ import {
   LoginUserDto,
   User,
 } from './models/user.model';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users') // Define a tag para este controlador
 @Controller('/users')
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Retorna todos os Usuários cadastrados' })
+  @ApiResponse({
+    status: 200,
+    description: 'Um Array com todos os Usuários cadastrados',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Não autorizado',
+  })
+  async getUsers(): Promise<any> {
+    try {
+      return await this.appService.findAll();
+    } catch (error) {
+      throw new HttpException(error.response, error.status);
+    }
+  }
 
   @Post()
   @ApiOperation({ summary: 'Cadastrar um novo usuário' })

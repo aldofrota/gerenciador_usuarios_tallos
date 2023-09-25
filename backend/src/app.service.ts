@@ -15,6 +15,10 @@ export class AppService {
     private websocketGateway: WebsocketGateway,
   ) {}
 
+  async findAll() {
+    return await this.userModel.find().exec();
+  }
+
   async findUserByEmail(email: string) {
     return await this.userModel.findOne({ email }).exec();
   }
@@ -89,17 +93,5 @@ export class AppService {
       expiresIn: '9h',
     });
     return token;
-  }
-
-  verifyJwtToken(token: string) {
-    let decode: any = '';
-    jwt.verify(token, 'tallos-users', (err, decoded) => {
-      if (err) {
-        console.error('Erro ao verificar o token:', err.message);
-      } else {
-        decode = decoded;
-      }
-    });
-    return decode;
   }
 }
