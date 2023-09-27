@@ -219,6 +219,8 @@ export default {
 
 .popover {
   position: relative;
+  z-index: 0;
+
   .popover-painel {
     width: 300px;
     background: #ffffff;

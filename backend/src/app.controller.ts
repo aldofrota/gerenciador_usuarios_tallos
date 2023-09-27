@@ -1,12 +1,27 @@
-import { Body, Controller, Get, HttpException, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import {
   AuthResponseDto,
   CreateUserDto,
   LoginUserDto,
+  UpdateUserDto,
   User,
 } from './models/user.model';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiTags('users') // Define a tag para este controlador
 @Controller('/users')
@@ -52,7 +67,7 @@ export class AppController {
   @ApiOperation({ summary: 'Autenticar usuário' })
   @ApiBody({
     type: LoginUserDto,
-    description: 'Corpo da requisição se autenticação',
+    description: 'Corpo da requisição de autenticação',
   })
   @ApiResponse({
     status: 201,
@@ -63,6 +78,32 @@ export class AppController {
   async authUser(@Body() body: User) {
     try {
       const user = await this.appService.auth(body);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.response, error.status);
+    }
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Atualizar Permissão do usuário' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do usuário a ser atualizado',
+    type: String,
+    required: true,
+  })
+  @ApiBody({
+    type: UpdateUserDto,
+    description: 'Corpo da requisição de atualização',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuário atualizado com sucesso',
+  })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  async updateUser(@Param('id') id: string, @Body() body: User) {
+    try {
+      const user = await this.appService.update(id, body);
       return user;
     } catch (error) {
       throw new HttpException(error.response, error.status);

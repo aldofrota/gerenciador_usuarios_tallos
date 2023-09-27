@@ -17,8 +17,8 @@
     [x] O mesmo usuário não pode realizar login em sessões diferentes simultaneamente.
     [x] Deve ser possível criar novos usuários.
     [x] A criação de novos usuários deve refletir em todos os usuários logados.
-    [ ] Deve ser possível mudar as permissões dos usuários.
-    [ ] A mudança das permissões dos usuários deve refletir em todos os usuários logados.
+    [x] Deve ser possível mudar as permissões dos usuários.
+    [x] A mudança das permissões dos usuários deve refletir em todos os usuários logados.
     [ ] Deve ser possível deletar os usuários.
     [ ] A remoção dos usuários deve refletir em todos os usuários logados.
     [x] Todas as rotas da api devem ser autenticadas utilizando JWT.

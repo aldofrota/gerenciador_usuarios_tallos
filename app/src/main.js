@@ -4,10 +4,12 @@ import router from "./router";
 import store from "./store";
 import Vue3Toasity from "vue3-toastify";
 
+import "./scss/styles.scss";
 import "vue3-toastify/dist/index.css";
 import "./assets/main.css";
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import * as Icons from "oh-vue-icons/icons";
+import * as bootstrap from "bootstrap";
 
 const app = createApp(App);
 

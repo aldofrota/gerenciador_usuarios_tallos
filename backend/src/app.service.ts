@@ -41,7 +41,6 @@ export class AppService {
       if (error.code === 11000) {
         throw new HttpException('E-mail já cadastrado', HttpStatus.BAD_REQUEST);
       } else {
-        console.log(error);
         throw new HttpException('Erro interno', 500);
       }
     }
@@ -78,6 +77,39 @@ export class AppService {
       }
     } else {
       throw new HttpException('Credenciais inválidas', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  async update(id: string, data: any): Promise<any> {
+    const userData = await this.userModel.findById(id);
+    try {
+      if (userData) {
+        userData.level = data.level;
+        await userData.save();
+
+        const socket_client = this.websocketGateway.users.find(
+          (user) => user.email === data.email,
+        );
+        if (socket_client) {
+          this.websocketGateway.users.map((user) => {
+            if (user.email === data.email) user.level = data.level;
+            return user;
+          });
+
+          this.websocketGateway.server
+            .to(socket_client.id_socket)
+            .emit('update-role-user-on', userData.level);
+        }
+        this.websocketGateway.server.emit(
+          'update-role',
+          this.websocketGateway.users,
+        );
+      } else {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      }
+    } catch (error) {
+      console.error(error.message);
+      throw new HttpException('Erro ao atualizar usuário', 500);
     }
   }
 
