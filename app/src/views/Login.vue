@@ -66,11 +66,12 @@
 import { io } from "socket.io-client";
 import { toast } from "vue3-toastify";
 import axios from "axios";
+import env from "../config/env.js";
 
 export default {
   data() {
     return {
-      socket: io("http://192.168.0.103:3000"),
+      socket: io(env.API_URL),
       register: false,
       login: true,
       login_form: {
@@ -96,7 +97,7 @@ export default {
       const data = { ...this.login_form };
 
       axios
-        .post("http://192.168.0.103:3000/users/auth", data)
+        .post(`${env.API_URL}/users/auth`, data)
         .then((response) => {
           if (response.data) {
             this.$store.dispatch("login", response.data);
@@ -143,7 +144,7 @@ export default {
       }
 
       axios
-        .post("http://192.168.0.103:3000/users", data)
+        .post(`${env.API_URL}/users`, data)
         .then(() => {
           toast("Cadastro realizado", {
             type: "success",

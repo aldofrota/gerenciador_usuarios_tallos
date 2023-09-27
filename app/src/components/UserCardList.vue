@@ -121,6 +121,7 @@
 import "animate.css";
 import axios from "axios";
 import { toast } from "vue3-toastify";
+import env from "../config/env.js";
 
 export default {
   data() {
@@ -149,7 +150,7 @@ export default {
       delete data.__v;
       delete data.password;
       axios
-        .put(`http://192.168.0.103:3000/users/${data._id}`, data, {
+        .put(`${env.API_URL}/users/${data._id}`, data, {
           headers: {
             Authorization: `Bearer ${this.token}`,
           },

@@ -45,6 +45,7 @@ import Notifications from "../components/Notifications.vue";
 
 import { toast } from "vue3-toastify";
 import axios from "axios";
+import env from "../config/env.js";
 
 export default {
   components: {
@@ -58,7 +59,7 @@ export default {
     return {
       users_online: [],
       users_list: [],
-      socket: io("http://192.168.0.103:3000", {
+      socket: io(env.API_URL, {
         query: {
           user: JSON.stringify(this.$store.getters.getUserData),
         },
@@ -110,7 +111,7 @@ export default {
     getUsers() {
       const token = this.$store.getters.getUserData.token;
       axios
-        .get("http://192.168.0.103:3000/users", {
+        .get(`${env.API_URL}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
