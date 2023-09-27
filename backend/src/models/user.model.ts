@@ -15,7 +15,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ default: 'User' })
+  @Prop({ default: 'user' })
   level?: string;
 }
 
@@ -50,6 +50,20 @@ export class LoginUserDto {
     description: 'Senha do usuário',
   })
   readonly password: string;
+}
+
+export class UpdateUserDto {
+  @ApiProperty({
+    example: 'john.doe@example.com',
+    description: 'Endereço de e-mail do usuário',
+  })
+  readonly email: string;
+
+  @ApiProperty({
+    example: 'user',
+    description: 'Permissão nova do usuário',
+  })
+  readonly level: string;
 }
 
 export class AuthResponseDto {
