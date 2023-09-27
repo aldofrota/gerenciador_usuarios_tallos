@@ -108,9 +108,17 @@ export default {
           }
         })
         .catch((error) => {
-          toast("Erro ao realizar Login: " + error.response.data.message, {
-            type: "error",
-          });
+          if (error.response) {
+            const message = error.response.data.message;
+            toast("Erro ao realizar Login: " + message, {
+              type: "error",
+            });
+          } else {
+            const message = error.message;
+            toast("Erro ao realizar Login: " + message, {
+              type: "error",
+            });
+          }
         });
     },
 
