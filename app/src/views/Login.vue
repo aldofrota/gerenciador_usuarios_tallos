@@ -130,13 +130,13 @@ export default {
 
       if (!emailRegex.test(data.email)) {
         toast("O e-mail não possui um formato válido", {
-          type: "info",
+          type: "warning",
         });
         return;
       }
       if (data.password !== data.repeat_password) {
         toast("As senhas não coincidem", {
-          type: "info",
+          type: "warning",
         });
         return;
       } else {

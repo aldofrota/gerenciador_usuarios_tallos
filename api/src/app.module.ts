@@ -27,6 +27,8 @@ export class AppModule implements OnModuleInit, NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes(
       { path: '/users', method: RequestMethod.GET },
+      { path: '/users', method: RequestMethod.PUT },
+      { path: '/users', method: RequestMethod.DELETE },
       // Adicione aqui outras rotas e métodos que deseja aplicar o middleware
     );
   }
@@ -37,7 +39,7 @@ export class AppModule implements OnModuleInit, NestModule {
       name: 'Admin',
       email: 'admin@admin',
       password: 'admin1234',
-      level: 'Admin',
+      role: 'admin',
     };
     const existingAdmin = await this.appService.findUserByEmail(
       adminUser.email,

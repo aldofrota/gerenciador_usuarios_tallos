@@ -3,12 +3,10 @@
     <div class="name-role">
       <span>{{ user.name }}</span>
       <span>
-        {{ user.level.charAt(0).toUpperCase() + user.level.slice(1) }}
+        {{ user.role.charAt(0).toUpperCase() + user.role.slice(1) }}
         <v-icon
           :name="
-            user.level === 'admin'
-              ? 'md-adminpanelsettings-outlined'
-              : 'fa-user'
+            user.role === 'admin' ? 'md-adminpanelsettings-outlined' : 'fa-user'
           "
         ></v-icon>
       </span>

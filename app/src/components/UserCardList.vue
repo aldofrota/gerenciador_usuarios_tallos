@@ -4,12 +4,12 @@
     <div class="user-info">
       <span class="user-email">{{ user.email }}</span>
       <span class="user-role">
-        {{ user.level.charAt(0).toUpperCase() + user.level.slice(1) }}
+        {{ user.role.charAt(0).toUpperCase() + user.role.slice(1) }}
       </span>
       <v-icon
         class="icon-role"
         :name="
-          user.level === 'admin' ? 'md-adminpanelsettings-outlined' : 'fa-user'
+          user.role === 'admin' ? 'md-adminpanelsettings-outlined' : 'fa-user'
         "
       ></v-icon>
 
@@ -26,7 +26,7 @@
 
         <ul class="dropdown-menu">
           <li>
-            <div class="itens-menu">
+            <div class="itens-menu" @click="deleteUser(user._id)">
               <span>Excluir</span>
               <v-icon name="bi-trash-fill"></v-icon>
             </div>
@@ -89,7 +89,7 @@
               <select
                 id="inputRole"
                 class="form-select"
-                v-model="user_editing.level"
+                v-model="user_editing.role"
               >
                 <option value="user">Usuário</option>
                 <option value="admin">Admin</option>
@@ -130,7 +130,7 @@ export default {
         _id: "",
         name: "",
         email: "",
-        level: "",
+        role: "",
       },
     };
   },
@@ -168,18 +168,37 @@ export default {
         });
     },
 
+    deleteUser(id) {
+      axios
+        .delete(`${env.API_URL}/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+          },
+        })
+        .then(() => {
+          toast("Usuário excluido com sucesso", {
+            type: "success",
+          });
+        })
+        .catch((error) => {
+          toast("Erro ao mudar a excluir usuário: " + error.message, {
+            type: "error",
+          });
+        });
+    },
+
     closeModal() {
       this.$refs.cancelBtn.click();
 
       this.user_editing.id = "";
       this.user_editing.name = "";
       this.user_editing.email = "";
-      this.user_editing.level = "";
+      this.user_editing.role = "";
     },
   },
   computed: {
     myRole() {
-      return this.$store.getters.getUserData.level;
+      return this.$store.getters.getUserData.role;
     },
     myEmail() {
       return this.$store.getters.getUserData.email;

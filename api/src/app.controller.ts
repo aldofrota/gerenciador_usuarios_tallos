@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
@@ -105,6 +106,27 @@ export class AppController {
     try {
       const user = await this.appService.update(id, body);
       return user;
+    } catch (error) {
+      throw new HttpException(error.response, error.status);
+    }
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Excluir usuário' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do usuário a ser excluido',
+    type: String,
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário excluido com sucesso',
+  })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  async removeUser(@Param('id') id: string) {
+    try {
+      await this.appService.delete(id);
     } catch (error) {
       throw new HttpException(error.response, error.status);
     }

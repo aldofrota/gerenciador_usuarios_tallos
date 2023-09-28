@@ -90,6 +90,21 @@ export default {
       this.getUsers();
     });
 
+    this.socket.on("new-user", (user) => {
+      this.getUsers();
+    });
+
+    this.socket.on("deleted-user-on", (data) => {
+      toast("Seu cadastro foi Excluido da Plataforma", {
+        type: "warning",
+      });
+      this.logout();
+    });
+
+    this.socket.on("deleted-user", (data) => {
+      this.getUsers();
+    });
+
     const userData = this.$store.getters.getUserData;
     if (!userData || !userData.name || !userData.email || !userData.token) {
       this.$router.push("/login");
@@ -104,8 +119,8 @@ export default {
     },
     logout() {
       this.$store.dispatch("logout");
-      this.$router.push("/login");
       this.socket.disconnect();
+      this.$router.push("/login");
     },
 
     getUsers() {
@@ -133,7 +148,7 @@ export default {
       return {
         name: this.$store.getters.getUserData.name,
         email: this.$store.getters.getUserData.email,
-        level: this.$store.getters.getUserData.level,
+        role: this.$store.getters.getUserData.level,
         token: this.$store.getters.getUserData.token,
       };
     },

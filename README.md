@@ -19,8 +19,8 @@
     [x] A criação de novos usuários deve refletir em todos os usuários logados.
     [x] Deve ser possível mudar as permissões dos usuários.
     [x] A mudança das permissões dos usuários deve refletir em todos os usuários logados.
-    [ ] Deve ser possível deletar os usuários.
-    [ ] A remoção dos usuários deve refletir em todos os usuários logados.
+    [x] Deve ser possível deletar os usuários.
+    [x] A remoção dos usuários deve refletir em todos os usuários logados.
     [x] Todas as rotas da api devem ser autenticadas utilizando JWT.
     [x] As aplicações(Front-End, Back-End, Banco de Dados) devem ser conteinerizadas.
     [x] Cada funcionalidade deve ser desenvolvida utilizando GitFlow.

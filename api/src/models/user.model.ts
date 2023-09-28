@@ -16,7 +16,7 @@ export class User {
   password: string;
 
   @Prop({ default: 'user' })
-  level?: string;
+  role?: string;
 }
 
 export const UserModel = SchemaFactory.createForClass(User);
@@ -63,7 +63,7 @@ export class UpdateUserDto {
     example: 'user',
     description: 'Permissão nova do usuário',
   })
-  readonly level: string;
+  readonly role: string;
 }
 
 export class AuthResponseDto {

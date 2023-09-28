@@ -9,7 +9,7 @@ export const UserSchema = new mongoose.Schema({
     unique: true,
     require: true,
   },
-  level: {
+  role: {
     type: String,
     default: 'user',
   },
