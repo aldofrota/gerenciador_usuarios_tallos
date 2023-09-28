@@ -63,14 +63,13 @@
 </template>
 
 <script>
-import { io } from "socket.io-client";
 import { toast } from "vue3-toastify";
 import axios from "axios";
+import env from "../config/env.js";
 
 export default {
   data() {
     return {
-      socket: io("http://192.168.0.103:3000"),
       register: false,
       login: true,
       login_form: {
@@ -86,9 +85,7 @@ export default {
     };
   },
 
-  mounted() {
-    this.socket.disconnect();
-  },
+  mounted() {},
 
   methods: {
     onSubmitLogin(event) {
@@ -96,7 +93,7 @@ export default {
       const data = { ...this.login_form };
 
       axios
-        .post("http://192.168.0.103:3000/users/auth", data)
+        .post(`${env.API_URL}/users/auth`, data)
         .then((response) => {
           if (response.data) {
             this.$store.dispatch("login", response.data);
@@ -129,13 +126,13 @@ export default {
 
       if (!emailRegex.test(data.email)) {
         toast("O e-mail não possui um formato válido", {
-          type: "info",
+          type: "warning",
         });
         return;
       }
       if (data.password !== data.repeat_password) {
         toast("As senhas não coincidem", {
-          type: "info",
+          type: "warning",
         });
         return;
       } else {
@@ -143,7 +140,7 @@ export default {
       }
 
       axios
-        .post("http://192.168.0.103:3000/users", data)
+        .post(`${env.API_URL}/users`, data)
         .then(() => {
           toast("Cadastro realizado", {
             type: "success",

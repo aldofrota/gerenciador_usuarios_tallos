@@ -9,31 +9,32 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: root
 
-  backend:
-    build: .
-    container_name: backend
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
     restart: always
     ports:
       - "3000:3000"
     depends_on:
       - mongodb
     volumes:
-      - ./backend:/app
+      - ./api:/api
 
   app:
-    build: .
+    build:
+      context: ./app
+      dockerfile: Dockerfile
     container_name: app
     restart: always
+    volumes:
+      - ./app:/app
     ports:
       - "8080:8080"
     depends_on:
-      - backend
-    volumes:
-      - ./app:/app
+      - api
 
 volumes:
   mongodb_data:

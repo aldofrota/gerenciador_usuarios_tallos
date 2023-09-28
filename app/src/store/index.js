@@ -5,7 +5,7 @@ const initialState = {
     name: null,
     email: null,
     token: null,
-    level: null,
+    role: null,
   },
 };
 
@@ -16,13 +16,13 @@ export default createStore({
       state.user.name = userData.name;
       state.user.email = userData.email;
       state.user.token = userData.token;
-      state.user.level = userData.level;
+      state.user.role = userData.role;
     },
     RESET_USER_DATA(state) {
       state.user.name = null;
       state.user.email = null;
       state.user.token = null;
-      state.user.level = null;
+      state.user.role = null;
     },
   },
   actions: {

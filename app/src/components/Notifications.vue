@@ -4,7 +4,11 @@
       <input type="checkbox" v-model="open" />
       <span class="button"></span>
       <span class="label"
-        ><v-icon class="icon-notifications" name="oi-bell-fill" />
+        ><v-icon
+          class="icon-notifications"
+          name="oi-bell-fill"
+          :animation="notifications.length > 0 && !open ? 'ring' : null"
+        />
       </span>
       <span
         v-if="notifications.length > 0 && !open"
@@ -52,13 +56,7 @@ import moment from "moment";
 export default {
   data() {
     return {
-      notifications: [
-        {
-          title: "Novo Usuário",
-          time: moment(),
-          message: "Fulano acabou de se cadastrar na plataforma",
-        },
-      ],
+      notifications: [],
       open: false,
     };
   },
@@ -72,9 +70,16 @@ export default {
     this.socket.on("new-user", (user) => {
       this.notifications.push(user);
     });
+
+    this.socket.on("deleted-user", (user) => {
+      this.notifications.push(user);
+    });
   },
 
   methods: {
+    callGetUser() {
+      this.getUsers();
+    },
     abrirMenu() {
       this.open = !this.open;
     },
@@ -324,7 +329,7 @@ export default {
 
       .p {
         font-size: 12px;
-        font-weight: lighter;
+        font-weight: 400;
       }
     }
   }

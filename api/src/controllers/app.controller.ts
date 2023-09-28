@@ -1,21 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService } from '../services/app.service';
 import {
   AuthResponseDto,
   CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
   User,
-} from './models/user.model';
+} from '../models/user.model';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -23,8 +25,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-@ApiTags('users') // Define a tag para este controlador
 @Controller('/users')
+@ApiTags('users')
+@ApiBearerAuth()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -101,10 +104,31 @@ export class AppController {
     description: 'Usuário atualizado com sucesso',
   })
   @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
-  async updateUser(@Param('id') id: string, @Body() body: User) {
+  async updateUser(@Param('id') id: string, @Body() body: any) {
     try {
       const user = await this.appService.update(id, body);
       return user;
+    } catch (error) {
+      throw new HttpException(error.response, error.status);
+    }
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Excluir usuário' })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do usuário a ser excluido',
+    type: String,
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário excluido com sucesso',
+  })
+  @ApiResponse({ status: 401, description: 'Credenciais inválidas' })
+  async removeUser(@Param('id') id: string) {
+    try {
+      await this.appService.delete(id);
     } catch (error) {
       throw new HttpException(error.response, error.status);
     }

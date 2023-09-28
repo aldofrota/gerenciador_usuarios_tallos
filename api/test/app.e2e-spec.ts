@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from './../src/app.module';
+import { AppModule } from '../src/app.module';
 import * as request from 'supertest';
 import * as jwt from 'jsonwebtoken';
 
@@ -9,6 +9,10 @@ function generateToken(): string {
     expiresIn: '1h',
   });
   return token;
+}
+
+function generateRandomId(): string {
+  return Math.floor(Math.random() * 1000).toString();
 }
 
 function generateRandomEmail(
@@ -73,5 +77,19 @@ describe('AppController (e2e)', () => {
       .get('/users')
       .set('Authorization', `Bearer ${token}`) // Inclua o token no cabeçalho
       .expect(200); // Esperando uma resposta bem-sucedida (HTTP status code 200)
+  });
+
+  it('Deve atualizar um Usuário', () => {
+    const tempID = generateRandomId(); // Gere um ID temporário aleatório
+    const token = generateToken(); // Gere um token JWT válido
+    const updatedData = {
+      role: 'user',
+    };
+
+    return request(app.getHttpServer())
+      .put(`/users/${tempID}`) // Substitua pela rota de atualização real
+      .set('Authorization', `Bearer ${token}`) // Inclua o token no cabeçalho
+      .send(updatedData)
+      .expect(200);
   });
 });

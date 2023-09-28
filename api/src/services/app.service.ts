@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
-import { User, UserDocument } from './models/user.model';
-import { WebsocketGateway } from './websocket.gateway';
+import { User, UserDocument } from '../models/user.model';
+import { WebsocketGateway } from '../websockets/websocket.gateway';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
@@ -46,6 +46,42 @@ export class AppService {
     }
   }
 
+  async delete(id: string): Promise<any> {
+    try {
+      const deletedUser = await this.userModel.findById(id);
+
+      if (!deletedUser) {
+        throw new HttpException('Usuário não localizado', HttpStatus.NOT_FOUND);
+      }
+      await deletedUser.deleteOne();
+
+      const socket_client = this.websocketGateway.users.find(
+        (user) => user.email === deletedUser.email,
+      );
+      if (socket_client) {
+        this.websocketGateway.server
+          .to(socket_client.id_socket)
+          .emit('deleted-user-on');
+      }
+
+      const deleted_user = {
+        title: 'Usuário Excluido',
+        message: `${deletedUser.name} foi excluido da plataforma.`,
+        time: moment(),
+        email: deletedUser.email,
+      };
+      setTimeout(() => {
+        this.websocketGateway.server.emit('deleted-user', deleted_user);
+      }, 500);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new HttpException('E-mail já cadastrado', HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException('Erro interno', 500);
+      }
+    }
+  }
+
   async auth(user: User): Promise<any> {
     const userData = await this.userModel.findOne({ email: user.email }).exec();
     if (userData) {
@@ -61,7 +97,7 @@ export class AppService {
             name: userData.name,
             email: userData.email,
             token,
-            level: userData.level,
+            role: userData.role,
           };
         } else {
           throw new HttpException(
@@ -84,7 +120,7 @@ export class AppService {
     const userData = await this.userModel.findById(id);
     try {
       if (userData) {
-        userData.level = data.level;
+        userData.role = data.role;
         await userData.save();
 
         const socket_client = this.websocketGateway.users.find(
@@ -92,13 +128,13 @@ export class AppService {
         );
         if (socket_client) {
           this.websocketGateway.users.map((user) => {
-            if (user.email === data.email) user.level = data.level;
+            if (user.email === data.email) user.role = data.role;
             return user;
           });
 
           this.websocketGateway.server
             .to(socket_client.id_socket)
-            .emit('update-role-user-on', userData.level);
+            .emit('update-role-user-on', userData.role);
         }
         this.websocketGateway.server.emit(
           'update-role',

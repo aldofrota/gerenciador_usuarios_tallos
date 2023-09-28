@@ -45,6 +45,7 @@ import Notifications from "../components/Notifications.vue";
 
 import { toast } from "vue3-toastify";
 import axios from "axios";
+import env from "../config/env.js";
 
 export default {
   components: {
@@ -58,7 +59,7 @@ export default {
     return {
       users_online: [],
       users_list: [],
-      socket: io("http://192.168.0.103:3000", {
+      socket: io(env.API_URL, {
         query: {
           user: JSON.stringify(this.$store.getters.getUserData),
         },
@@ -79,14 +80,35 @@ export default {
 
     this.socket.on("update-role-user-on", (new_role) => {
       let newState = { ...this.user };
-      newState.level = new_role;
+      newState.role = new_role;
       this.$store.dispatch("login", newState);
     });
 
     this.socket.on("update-role", (users) => {
       this.users_online.splice(0);
       this.users_online.push(...users);
-      this.getUsers();
+      if (this.isLoged) {
+        this.getUsers();
+      }
+    });
+
+    this.socket.on("new-user", (user) => {
+      if (this.isLoged) {
+        this.getUsers();
+      }
+    });
+
+    this.socket.on("deleted-user-on", (data) => {
+      toast("Seu cadastro foi Excluido da Plataforma", {
+        type: "warning",
+      });
+      this.logout();
+    });
+
+    this.socket.on("deleted-user", (data) => {
+      if (this.isLoged) {
+        this.getUsers();
+      }
     });
 
     const userData = this.$store.getters.getUserData;
@@ -102,15 +124,15 @@ export default {
       this.socket.emit("message", message);
     },
     logout() {
+      this.socket.disconnect();
       this.$store.dispatch("logout");
       this.$router.push("/login");
-      this.socket.disconnect();
     },
 
     getUsers() {
       const token = this.$store.getters.getUserData.token;
       axios
-        .get("http://192.168.0.103:3000/users", {
+        .get(`${env.API_URL}/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -132,9 +154,15 @@ export default {
       return {
         name: this.$store.getters.getUserData.name,
         email: this.$store.getters.getUserData.email,
-        level: this.$store.getters.getUserData.level,
+        role: this.$store.getters.getUserData.role,
         token: this.$store.getters.getUserData.token,
       };
+    },
+    isLoged() {
+      const userData = this.$store.getters.getUserData;
+      if (userData.name && userData.email && userData.token) {
+        return true;
+      }
     },
   },
 };
