@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
-import { User, UserDocument } from './models/user.model';
-import { WebsocketGateway } from './websocket.gateway';
+import { User, UserDocument } from '../models/user.model';
+import { WebsocketGateway } from '../websockets/websocket.gateway';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
@@ -49,6 +49,10 @@ export class AppService {
   async delete(id: string): Promise<any> {
     try {
       const deletedUser = await this.userModel.findById(id);
+
+      if (!deletedUser) {
+        throw new HttpException('Usuário não localizado', HttpStatus.NOT_FOUND);
+      }
       await deletedUser.deleteOne();
 
       const socket_client = this.websocketGateway.users.find(

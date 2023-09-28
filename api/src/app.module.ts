@@ -5,16 +5,16 @@ import {
   OnModuleInit,
   RequestMethod,
 } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './controllers/app.controller';
+import { AppService } from './services/app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './schemas/user.schema';
-import { WebsocketGateway } from './websocket.gateway';
-import { AuthMiddleware } from './auth.middleware';
+import { WebsocketGateway } from './websockets/websocket.gateway';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://mongodb/tallos-users'),
+    MongooseModule.forRoot('mongodb://localhost:27017/tallos-users'),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
 
@@ -25,16 +25,16 @@ export class AppModule implements OnModuleInit, NestModule {
   constructor(private readonly appService: AppService) {}
 
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes(
-      { path: '/users', method: RequestMethod.GET },
-      { path: '/users', method: RequestMethod.PUT },
-      { path: '/users', method: RequestMethod.DELETE },
-      // Adicione aqui outras rotas e métodos que deseja aplicar o middleware
-    );
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: '/users', method: RequestMethod.GET },
+        { path: '/users', method: RequestMethod.PUT },
+        { path: '/users', method: RequestMethod.DELETE },
+      );
   }
 
   async onModuleInit() {
-    // Inicialize o banco de dados com um usuário padrão
     const adminUser = {
       name: 'Admin',
       email: 'admin@admin',

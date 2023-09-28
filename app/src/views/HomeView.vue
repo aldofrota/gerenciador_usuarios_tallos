@@ -80,18 +80,22 @@ export default {
 
     this.socket.on("update-role-user-on", (new_role) => {
       let newState = { ...this.user };
-      newState.level = new_role;
+      newState.role = new_role;
       this.$store.dispatch("login", newState);
     });
 
     this.socket.on("update-role", (users) => {
       this.users_online.splice(0);
       this.users_online.push(...users);
-      this.getUsers();
+      if (this.isLoged) {
+        this.getUsers();
+      }
     });
 
     this.socket.on("new-user", (user) => {
-      this.getUsers();
+      if (this.isLoged) {
+        this.getUsers();
+      }
     });
 
     this.socket.on("deleted-user-on", (data) => {
@@ -102,7 +106,9 @@ export default {
     });
 
     this.socket.on("deleted-user", (data) => {
-      this.getUsers();
+      if (this.isLoged) {
+        this.getUsers();
+      }
     });
 
     const userData = this.$store.getters.getUserData;
@@ -118,8 +124,8 @@ export default {
       this.socket.emit("message", message);
     },
     logout() {
-      this.$store.dispatch("logout");
       this.socket.disconnect();
+      this.$store.dispatch("logout");
       this.$router.push("/login");
     },
 
@@ -148,9 +154,15 @@ export default {
       return {
         name: this.$store.getters.getUserData.name,
         email: this.$store.getters.getUserData.email,
-        role: this.$store.getters.getUserData.level,
+        role: this.$store.getters.getUserData.role,
         token: this.$store.getters.getUserData.token,
       };
+    },
+    isLoged() {
+      const userData = this.$store.getters.getUserData;
+      if (userData.name && userData.email && userData.token) {
+        return true;
+      }
     },
   },
 };

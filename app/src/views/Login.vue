@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import { io } from "socket.io-client";
 import { toast } from "vue3-toastify";
 import axios from "axios";
 import env from "../config/env.js";
@@ -71,7 +70,6 @@ import env from "../config/env.js";
 export default {
   data() {
     return {
-      socket: io(env.API_URL),
       register: false,
       login: true,
       login_form: {
@@ -87,9 +85,7 @@ export default {
     };
   },
 
-  mounted() {
-    this.socket.disconnect();
-  },
+  mounted() {},
 
   methods: {
     onSubmitLogin(event) {
