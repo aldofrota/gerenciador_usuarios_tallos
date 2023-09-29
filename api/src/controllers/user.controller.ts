@@ -8,7 +8,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { AppService } from '../services/app.service';
+import { UserService } from '../services/user.service';
 import {
   AuthResponseDto,
   CreateUserDto,
@@ -28,8 +28,8 @@ import {
 @Controller('/users')
 @ApiTags('users')
 @ApiBearerAuth()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class UserController {
+  constructor(private readonly appService: UserService) {}
 
   @Get()
   @ApiOperation({ summary: 'Retorna todos os Usuários cadastrados' })

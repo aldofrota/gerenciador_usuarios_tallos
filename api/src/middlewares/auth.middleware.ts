@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { AppService } from '../services/app.service';
+import { UserService } from '../services/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private appService: AppService) {}
+  constructor(private appService: UserService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     // Verificar se o token JWT está presente no cabeçalho da requisição
