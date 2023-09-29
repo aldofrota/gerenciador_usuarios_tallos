@@ -5,10 +5,10 @@ import {
   OnModuleInit,
   RequestMethod,
 } from '@nestjs/common';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
+import { UserController } from './controllers/user.controller';
+import { UserService } from './services/user.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './schemas/user.schema';
+import { UserSchema } from './models/user.schema';
 import { WebsocketGateway } from './websockets/websocket.gateway';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 
@@ -18,11 +18,11 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
 
-  controllers: [AppController],
-  providers: [AppService, WebsocketGateway],
+  controllers: [UserController],
+  providers: [UserService, WebsocketGateway],
 })
 export class AppModule implements OnModuleInit, NestModule {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: UserService) {}
 
   configure(consumer: MiddlewareConsumer) {
     consumer
@@ -40,6 +40,11 @@ export class AppModule implements OnModuleInit, NestModule {
       email: 'admin@admin',
       password: 'admin1234',
       role: 'admin',
+      permissions: {
+        register: true,
+        remove: true,
+        update_user: true,
+      },
     };
     const existingAdmin = await this.appService.findUserByEmail(
       adminUser.email,

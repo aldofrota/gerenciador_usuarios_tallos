@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from '../services/app.service';
+import { UserController } from './user.controller';
+import { UserService } from '../services/user.service';
 import { CreateUserDto, LoginUserDto } from '../models/user.model';
 
 jest.mock('../services/app.service');
 
-describe('AppController', () => {
-  let appController: AppController;
-  let appService: AppService;
+describe('UserController', () => {
+  let appController: UserController;
+  let appService: UserService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService],
+      controllers: [UserController],
+      providers: [UserService],
     }).compile();
 
-    appController = module.get<AppController>(AppController);
-    appService = module.get<AppService>(AppService);
+    appController = module.get<UserController>(UserController);
+    appService = module.get<UserService>(UserService);
   });
 
   describe('getUsers', () => {

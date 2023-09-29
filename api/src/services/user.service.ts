@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
 
 @Injectable()
-export class AppService {
+export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private websocketGateway: WebsocketGateway,
@@ -28,11 +28,12 @@ export class AppService {
       const hashedPassword = await bcrypt.hash(user.password, 5);
       user.password = hashedPassword;
       const createdUser = new this.userModel(user);
+
       await createdUser.save();
 
       const new_user = {
         title: 'Novo Usuário',
-        message: `${createdUser.name} realizou seu cadastro na plataforma.`,
+        message: `${createdUser.name} foi cadastrado na plataforma.`,
         time: moment(),
         email: createdUser.email,
       };
@@ -98,6 +99,7 @@ export class AppService {
             email: userData.email,
             token,
             role: userData.role,
+            permissions: userData.permissions,
           };
         } else {
           throw new HttpException(
@@ -121,6 +123,7 @@ export class AppService {
     try {
       if (userData) {
         userData.role = data.role;
+        userData.permissions = data.permissions;
         await userData.save();
 
         const socket_client = this.websocketGateway.users.find(
@@ -134,7 +137,10 @@ export class AppService {
 
           this.websocketGateway.server
             .to(socket_client.id_socket)
-            .emit('update-role-user-on', userData.role);
+            .emit('update-role-user-on', {
+              role: userData.role,
+              permissions: userData.permissions,
+            });
         }
         this.websocketGateway.server.emit(
           'update-role',

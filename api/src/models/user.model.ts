@@ -3,6 +3,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
+export type Permissions = {
+  [key: string]: boolean; // As chaves são as permissões e os valores indicam se a permissão está habilitada ou não.
+};
 
 @Schema()
 export class User {
@@ -17,6 +20,16 @@ export class User {
 
   @Prop({ default: 'user' })
   role?: string;
+
+  @Prop({
+    default: {
+      register: false,
+      remove: false,
+      update_user: false,
+    },
+    type: Object,
+  })
+  permissions?: Permissions;
 }
 
 export const UserModel = SchemaFactory.createForClass(User);
