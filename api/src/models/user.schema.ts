@@ -13,4 +13,13 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     default: 'user',
   },
+
+  permissions: {
+    type: Object,
+    default: {
+      register: false,
+      remove: false,
+      update_user: false,
+    },
+  },
 });

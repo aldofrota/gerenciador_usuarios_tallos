@@ -89,7 +89,7 @@ Certifique-se de ter o Docker e o Docker-Compose instalados em seu sistema.
 2. **Execute o Docker-Compose para iniciar os serviços:**
 
    ```bash
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
    Isso criará os contêineres para o MongoDB, API NestJS e a aplicação Vue.js, iniciando os serviços em segundo plano.

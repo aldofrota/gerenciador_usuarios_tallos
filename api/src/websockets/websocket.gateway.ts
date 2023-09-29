@@ -43,9 +43,4 @@ export class WebsocketGateway {
     }
     this.server.emit('desconnected', this.users);
   }
-
-  // @SubscribeMessage('register')
-  // handleMessageRegisterUser(client: Socket, payload: any) {
-  //   console.log('Mensagem recebida do cliente:', payload);
-  // }
 }

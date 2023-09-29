@@ -26,7 +26,7 @@ function generateRandomEmail(
   return `${prefix}${randomString}@${domain}`;
 }
 
-describe('AppController (e2e)', () => {
+describe('UserController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
